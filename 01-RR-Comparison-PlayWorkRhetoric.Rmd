@@ -147,11 +147,10 @@ Now, at long last, we can visualize them. First, lets compare just the Professio
 profscicorpuses <- c("Nature","Philosophical-Magazine","RSE","RSL","BAAS","Royal-Institution")
 tempcomp <- ComparisonFreqdf[ComparisonFreqdf$Corpus %in% profscicorpuses,]
 p <- ggplot(tempcomp, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.numeric(substr(Date,1,4)), color = Category))
-    pg <- geom_point(size=.5)
+    pg <- geom_point(size=1)
     pq <- geom_smooth()
-      pl <- p + pg +pq + facet_wrap(~Corpus) +labs(x = "Date", y = "Normalized Frequency (% of Words in Text)", title = "Appearances of Play and Work Rhetoric")
+      pl <- p + pg +pq + facet_wrap(~Corpus) +labs(x = "Date", y = "Normalized Frequency (% of Words in Text, out of 100)", title = "'play', 'player', 'recreation', 'work', 'worker', and 'labor' in 19th Century Scientific Reports, Proceedings, and Periodicals")
       pl
-        
 ```
 
 And finally, we can compare across several sets of corpuses.
