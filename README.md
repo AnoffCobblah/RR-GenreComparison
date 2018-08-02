@@ -1,2 +1,2 @@
 # RR-GenreComparison
-This repository was created to compare the appearance of Play and Work Rhetoric in Victorian Periodicals, Popular Science Texts, and Scientific Life Writing Texts, 1800-1900.
+This repository was created to compare the appearance of Play and Work Rhetoric in Victorian Periodicals, Popular Science Texts, and Scientific Life Writing Texts, 1800-1900. Please note that this is based on the Recreational Reckoning methodology I developed (see https://github.com/AnoffCobblah/RR-Recreational-Reckoning-Main), and makes use of the WordFlag outputs created in https://github.com/AnoffCobblah/RR-Professional-Science-Periodicals, https://github.com/AnoffCobblah/RR-Scientific-Life-Writing, and https://github.com/AnoffCobblah/RR-PopularScience.

@@ -1,0 +1,212 @@
+---
+title: "01-RR-Comparison-PlayWorkRhetoric"
+author: "Anoff Nicholas Cobblah"
+date: "July 31, 2018"
+output: html_document
+  html_document:
+    number_sections: yes
+    toc: true
+    toc_depth: 6
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Work and Play Comparisons across Genres
+
+Sometimes for my work it is helpful to compare the datasets that I've created above. This is the space in which I make thos comparisons.
+
+#### **PROVISIONAL** March 2018: "play", "player", "recreation", "work", "worker", and "labor" in Victorian Professional Science Writing, Popular Science, and Scientific Life Writing (SOME OF THE DATA SETS BEING DRAWN ON STILL BEING CLEANED)
+
+The first step is to read back in the data we created above. Setting StringsAsFactors=FALSE helps to combine the datasets later.
+```{r comparison read, eval=FALSE}
+#Household Words
+HouseholdWordslocation <- paste0(getwd(),"/Applications/Victorian-Culture/Victorian-Periodicals/Household-Words")
+HouseholdWordsoutputlocation <- HouseholdWordslocation
+HouseholdWordsWordFlagdfPath <- paste0(HouseholdWordsoutputlocation,"/","HouseholdWordsWordFlagdf.txt")
+HouseholdWordsWordFlagdf <- read.table(HouseholdWordsWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Nature
+Naturelocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Nature")
+Natureoutputlocation <- Naturelocation
+NatureWordFlagdfPath <- paste0(Natureoutputlocation,"/","NatureWordFlagdf.txt")
+NatureWordFlagdf <- read.table(NatureWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Philosophical Magazine
+PhilMaglocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Philosophical-Magazine")
+PhilMagoutputlocation <- PhilMaglocation
+PhilMagWordFlagdfPath <- paste0(PhilMagoutputlocation,"/","PhilMagWordFlagdf.txt")
+PhilMagWordFlagdf <- read.table(PhilMagWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Proceedings of the Meetings of the Royal Institution
+RoyInstlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Royal-Institution")
+RoyInstoutputlocation <- RoyInstlocation
+RoyInstWordFlagdfPath <- paste0(RoyInstoutputlocation,"/","RoyInstWordFlagdf.txt")
+RoyInstWordFlagdf <- read.table(RoyInstWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Proceedings of the Royal Society of Edinburgh
+ProcRSElocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Royal-Society-of-Edinburgh")
+ProcRSEoutputlocation <- ProcRSElocation
+ProcRSEWordFlagdfPath <- paste0(ProcRSEoutputlocation,"/","ProcRSEWordFlagdf.txt")
+ProcRSEWordFlagdf <- read.table(ProcRSEWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Proceedings of the Royal Society of London
+RoySocLonlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/RSL")
+RoySocLonoutputlocation <- RoySocLonlocation
+RoySocLonWordFlagdfPath <- paste0(RoySocLonoutputlocation,"/","RoySocLonWordFlagdf.txt")
+RoySocLonWordFlagdf <- read.table(RoySocLonWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Reports of the BAAS
+BAASlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Reports-of-the-BAAS")
+BAASoutputlocation <- BAASlocation
+BAASWordFlagdfPath <- paste0(BAASoutputlocation,"/","BAASWordFlagdf.txt")
+BAASWordFlagdf <- read.table(BAASWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Popular Science Corpus
+PopScilocation <- paste0(getwd(),"/Applications/Victorian-Popular-Science")
+PopScioutputlocation <- PopScilocation
+PopSciWordFlagdfPath <- paste0(PopScioutputlocation,"/","PopSciWordFlagdf.txt")
+PopSciWordFlagdf <- read.table(PopSciWordFlagdfPath,stringsAsFactors=FALSE)
+
+#Scientific Life Writing Corpus
+SciLifelocation <- paste0(getwd(),"/Applications/Victorian-Scientific-Life-Writing")
+SciLifeoutputlocation <- SciLifelocation
+SciLifeWordFlagdfPath <- paste0(SciLifeoutputlocation,"/","SciLifeWordFlagdf.txt")
+SciLifeWordFlagdf <- read.table(SciLifeWordFlagdfPath,stringsAsFactors=FALSE)
+```
+
+The goal is to be able to represent these on the same ggplot using facet_wrap(). So first we need to add a column marking the dataset they each came from. Then we need to add all the datasets into one dataframe. Each of them has a different name for the search term variable, but to rbind the datasets we need to change those columns.
+```{r consolidating comparison, eval=FALSE}
+HouseholdWordsWordFlagdf$Corpus <- "Household-Words"
+names(HouseholdWordsWordFlagdf)[grep("stemsearchedterm",names(HouseholdWordsWordFlagdf))] <- "stemsearchedterm"
+NatureWordFlagdf$Corpus <- "Nature"
+names(NatureWordFlagdf)[grep("stemsearchedterm",names(NatureWordFlagdf))] <- "stemsearchedterm"
+PhilMagWordFlagdf$Corpus <- "Philosophical-Magazine"
+names(PhilMagWordFlagdf)[grep("stemsearchedterm",names(PhilMagWordFlagdf))] <- "stemsearchedterm"
+RoyInstWordFlagdf$Corpus <- "Royal-Institution"
+names(RoyInstWordFlagdf)[grep("stemsearchedterm",names(RoyInstWordFlagdf))] <- "stemsearchedterm"
+ProcRSEWordFlagdf$Corpus <- "RSE"
+names(ProcRSEWordFlagdf)[grep("stemsearchedterm",names(ProcRSEWordFlagdf))] <- "stemsearchedterm"
+RoySocLonWordFlagdf$Corpus <- "RSL"
+names(RoySocLonWordFlagdf)[grep("stemsearchedterm",names(RoySocLonWordFlagdf))] <- "stemsearchedterm"
+BAASWordFlagdf$Corpus <- "BAAS"
+names(BAASWordFlagdf)[grep("stemsearchedterm",names(BAASWordFlagdf))] <- "stemsearchedterm"
+PopSciWordFlagdf$Corpus <- "Pop-Sci"
+names(PopSciWordFlagdf)[grep("stemsearchedterm",names(PopSciWordFlagdf))] <- "stemsearchedterm"
+SciLifeWordFlagdf$Corpus <- "Sci-Life"
+names(SciLifeWordFlagdf)[grep("stemsearchedterm",names(SciLifeWordFlagdf))] <- "stemsearchedterm"
+
+Comparisondf <- rbind(HouseholdWordsWordFlagdf,NatureWordFlagdf,PhilMagWordFlagdf,RoyInstWordFlagdf,ProcRSEWordFlagdf,RoySocLonWordFlagdf,BAASWordFlagdf,PopSciWordFlagdf,SciLifeWordFlagdf)
+Comparisondf
+```
+
+
+We can then add up the values in Comparisondf to make a table of the frequency of play and work rhetoric, ComparisonFreqmat.
+
+```{r ComparisonFreqmat,  eval=FALSE}
+  # Adding values from Comparisondf together to get a matrix of normalized frequencies for each category, as ComparisonFreqmat
+ComparisonFreqmat <- matrix(,ncol=10,nrow=1)
+texts <- unique(Comparisondf$Text)
+for(i in 1:length(texts)) {
+  tempdf <- subset(Comparisondf,(Comparisondf$Category == "Play-Rhetoric")&(Comparisondf$Text == texts[i]))
+  tempfreqmat <- matrix(,ncol=10,nrow=1)
+  TempTextName <- texts[i]
+  TempDate <- tempdf$Date[1]
+  TempLength <- tempdf$Total_Lemma[1]
+  TempCorpus <- tempdf$Corpus[1]
+  temprows <- matrix(,ncol=10,nrow=1)
+  colnames(temprows) <- c("Text", "Text_ID","Date","Category","Frequency","Total_Lemma","Normalized_Freq","Sample_KWIC","Avg_Lemma_Perc","Corpus")
+  temprows[1,1] <- as.character(TempTextName)
+  temprows[1,2] <- i
+  temprows[1,3] <- as.character(TempDate)
+  temprows[1,4] <- "Play-Rhetoric"
+  temprows[1,5] <- nrow(tempdf)
+  temprows[1,6]<- as.character(TempLength)
+  temprows[1,7] <- (as.numeric(temprows[1,5])/as.numeric(temprows[1,6]))*100
+  if(nrow(tempdf) > 0){temprows[1,8] <- as.character(sample(tempdf$Short_KWIC,1))}else{temprows[1,8] <- NA}
+  temprows[1,9] <- mean(as.numeric(as.character(tempdf$Lemma_Perc)))
+  temprows[1,10] <- TempCorpus
+  ComparisonFreqmat <- rbind(ComparisonFreqmat,temprows)
+}
+for(i in 1:length(texts)) {
+  tempdf <- subset(Comparisondf,(Comparisondf$Category == "Work-Rhetoric")&(Comparisondf$Text == texts[i]))
+  tempfreqmat <- matrix(,ncol=10,nrow=1)
+  TempTextName <- texts[i]
+  TempDate <- tempdf$Date[1]
+  TempLength <- tempdf$Total_Lemma[1]
+  TempCorpus <- tempdf$Corpus[1]
+  temprows <- matrix(,ncol=10,nrow=1)
+  colnames(temprows) <- c("Text", "Text_ID","Date","Category","Frequency","Total_Lemma","Normalized_Freq","Sample_KWIC","Avg_Lemma_Perc","Corpus")
+  temprows[1,1] <- as.character(TempTextName)
+  temprows[1,2] <- i
+  temprows[1,3] <- as.character(TempDate)
+  temprows[1,4] <- "Work-Rhetoric"
+  temprows[1,5] <- nrow(tempdf)
+  temprows[1,6]<- as.character(TempLength)
+  temprows[1,7] <- (as.numeric(temprows[1,5])/as.numeric(temprows[1,6]))*100
+  if(nrow(tempdf) > 0){temprows[1,8] <- as.character(sample(tempdf$Short_KWIC,1))}else{temprows[1,8] <- NA}
+  temprows[1,9] <- mean(as.numeric(as.character(tempdf$Lemma_Perc)))
+  temprows[1,10] <- TempCorpus
+  ComparisonFreqmat <- rbind(ComparisonFreqmat,temprows)
+}
+      ComparisonFreqmat <- ComparisonFreqmat[-1,]
+      ComparisonFreqdf <- as.data.frame(ComparisonFreqmat)
+      ComparisonFreqdf
+```
+
+Now, at long last, we can visualize them. First, lets compare just the Professional Science Writing texts. **The Philosphical Magazine does seem to be an outlier.**
+
+```{r visualize professional, eval=FALSE}
+profscicorpuses <- c("Nature","Philosophical-Magazine","RSE","RSL","BAAS","Royal-Institution")
+tempcomp <- ComparisonFreqdf[ComparisonFreqdf$Corpus %in% profscicorpuses,]
+p <- ggplot(tempcomp, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.numeric(substr(Date,1,4)), color = Category))
+    pg <- geom_point(size=.5)
+    pq <- geom_smooth()
+      pl <- p + pg +pq + facet_wrap(~Corpus) +labs(x = "Date", y = "Normalized Frequency (% of Words in Text)", title = "Appearances of Play and Work Rhetoric")
+      pl
+        
+```
+
+And finally, we can compare across several sets of corpuses.
+
+```{r visualize all, eval=FALSE}
+#tempcomp <- subset(ComparisonFreqdf,ComparisonFreqdf$Corpus == c("Household-Words","Nature","Philosophical-Magazine","RSE","RSL","BAAS","Royal-Institution","Pop-Sci","Sci-Life"))
+tempcomp<-ComparisonFreqdf
+#tempcomp <- tempcomp[grep(c("Household-Words|Nature|Philosophical-Magazine|RSE|RSL|BAAS|Royal-Institution|Pop-Sci|Sci-Life"),ComparisonFreqdf$Corpus),]
+#tempcomp <- tempcomp[which(ComparisonFreqdf$Corpus %in% c("Household-Words","Nature","Philosophical-Magazine","RSE","RSL","BAAS","Royal-Institution","Pop-Sci","Sci-Life")),]
+
+  #tempcomp <- tempcomp[order(tempcomp$Corpus),]
+      #p <- ggplot(ComparisonFreqdf, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.numeric(substr(Date,1,4)), color = Category))
+      
+p <- ggplot(tempcomp, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.numeric(substr(Date,1,4)), color = Category))
+pg <- geom_smooth()
+      pl <- p + pg + facet_wrap(~Corpus) +labs(x = "Date", y = "Normalized Frequency (% of Words in Text)", title = "Appearances of Play and Work Rhetoric")
+      pl
+        
+      
+      allscicorpuses <- c("Household-Words","Nature","Philosophical-Magazine","RSE","RSL","BAAS","Royal-Institution","Pop-Sci","Sci-Life")
+tempcomp <- ComparisonFreqdf[ComparisonFreqdf$Corpus %in% allscicorpuses,]
+p <- ggplot(tempcomp, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.numeric(substr(Date,1,4)), color = Category))
+    pg <- geom_point(size=.5)
+    pq <- geom_smooth()
+      pl <- p + pg +pq + facet_wrap(~Corpus) +labs(x = "Date", y = "Normalized Frequency (% of Words in Text)", title = "Appearances of Play and Work Rhetoric")
+      pl
+```
+
+We can also use the tm package and findAssocs() function to see what words were most frequently associated with play and work in the 19th century.
+```{r comparison correlation, eval=FALSE}
+  correlation <- 0.8
+
+  datacorpus <- Corpus(VectorSource(Comparisondf$KWIC), readerControl=list(reader = readPlain))
+  
+  
+  data.tdm <- TermDocumentMatrix(datacorpus,control = list(removePunctuation = TRUE, stopwords = FALSE, tolower = TRUE, stemming = FALSE, 
+                                                           removeNumbers = TRUE, bounds = list(global= c(1,Inf))))
+  
+    assocdata <- findAssocs(data.tdm, "play", correlation)
+    
+    print(paste0("The following is the highest correlations for the search term '",assocterm[i],"'."))
+    print(assocdata[[1]][1:20])
+    View(assocdata[[1]][1:20])
+```
