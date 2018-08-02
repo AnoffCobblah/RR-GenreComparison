@@ -15,64 +15,50 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### Work and Play Comparisons across Genres
 
-Sometimes for my work it is helpful to compare the datasets that I've created above. This is the space in which I make thos comparisons.
+Sometimes for my work it is helpful to compare the datasets that I've created above. This is the space in which I make those comparisons.
 
-#### **PROVISIONAL** March 2018: "play", "player", "recreation", "work", "worker", and "labor" in Victorian Professional Science Writing, Popular Science, and Scientific Life Writing (SOME OF THE DATA SETS BEING DRAWN ON STILL BEING CLEANED)
+####  March 2018: "play", "player", "recreation", "work", "worker", and "labor" in Victorian Professional Science Writing, Popular Science, and Scientific Life Writing.
 
-The first step is to read back in the data we created above. Setting StringsAsFactors=FALSE helps to combine the datasets later.
+The first step is to read back in the data we created above. Setting StringsAsFactors=FALSE helps to combine the datasets later. **Note that this script depends on dataframes from other repositories. As these data frames are sometimes >100 MB, they are not uploaded to github. Instead, I download them manually into a folder called "WordFlagDataFrames," which is ignored by git (because it is one of the entries in ".gitignore"). So to verify the accuracy of this vidualization, you should first go through all those other repositories.**
+
+
 ```{r comparison read, eval=FALSE}
+dflocation <- paste0(getwd(),"/WordFlagDataFrames")
+
 #Household Words
-HouseholdWordslocation <- paste0(getwd(),"/Applications/Victorian-Culture/Victorian-Periodicals/Household-Words")
-HouseholdWordsoutputlocation <- HouseholdWordslocation
-HouseholdWordsWordFlagdfPath <- paste0(HouseholdWordsoutputlocation,"/","HouseholdWordsWordFlagdf.txt")
+HouseholdWordsWordFlagdfPath <- paste0(dflocation,"/","HouseholdWordsWordFlagdf.txt")
 HouseholdWordsWordFlagdf <- read.table(HouseholdWordsWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Nature
-Naturelocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Nature")
-Natureoutputlocation <- Naturelocation
-NatureWordFlagdfPath <- paste0(Natureoutputlocation,"/","NatureWordFlagdf.txt")
+NatureWordFlagdfPath <- paste0(dflocation,"/","NatureWordFlagdf.txt")
 NatureWordFlagdf <- read.table(NatureWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Philosophical Magazine
-PhilMaglocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Philosophical-Magazine")
-PhilMagoutputlocation <- PhilMaglocation
-PhilMagWordFlagdfPath <- paste0(PhilMagoutputlocation,"/","PhilMagWordFlagdf.txt")
+PhilMagWordFlagdfPath <- paste0(dflocation,"/","PhilMagWordFlagdf.txt")
 PhilMagWordFlagdf <- read.table(PhilMagWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Proceedings of the Meetings of the Royal Institution
-RoyInstlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Royal-Institution")
-RoyInstoutputlocation <- RoyInstlocation
-RoyInstWordFlagdfPath <- paste0(RoyInstoutputlocation,"/","RoyInstWordFlagdf.txt")
+RoyInstWordFlagdfPath <- paste0(dflocation,"/","RoyInstWordFlagdf.txt")
 RoyInstWordFlagdf <- read.table(RoyInstWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Proceedings of the Royal Society of Edinburgh
-ProcRSElocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Royal-Society-of-Edinburgh")
-ProcRSEoutputlocation <- ProcRSElocation
-ProcRSEWordFlagdfPath <- paste0(ProcRSEoutputlocation,"/","ProcRSEWordFlagdf.txt")
+ProcRSEWordFlagdfPath <- paste0(dflocation,"/","ProcRSEWordFlagdf.txt")
 ProcRSEWordFlagdf <- read.table(ProcRSEWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Proceedings of the Royal Society of London
-RoySocLonlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/RSL")
-RoySocLonoutputlocation <- RoySocLonlocation
-RoySocLonWordFlagdfPath <- paste0(RoySocLonoutputlocation,"/","RoySocLonWordFlagdf.txt")
+RoySocLonWordFlagdfPath <- paste0(dflocation,"/","RoySocLonWordFlagdf.txt")
 RoySocLonWordFlagdf <- read.table(RoySocLonWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Reports of the BAAS
-BAASlocation <- paste0(getwd(),"/Applications/Victorian-Professional-Science-Writing/Reports-of-the-BAAS")
-BAASoutputlocation <- BAASlocation
-BAASWordFlagdfPath <- paste0(BAASoutputlocation,"/","BAASWordFlagdf.txt")
+BAASWordFlagdfPath <- paste0(dflocation,"/","BAASWordFlagdf.txt")
 BAASWordFlagdf <- read.table(BAASWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Popular Science Corpus
-PopScilocation <- paste0(getwd(),"/Applications/Victorian-Popular-Science")
-PopScioutputlocation <- PopScilocation
-PopSciWordFlagdfPath <- paste0(PopScioutputlocation,"/","PopSciWordFlagdf.txt")
+PopSciWordFlagdfPath <- paste0(dflocation,"/","PopSciWordFlagdf.txt")
 PopSciWordFlagdf <- read.table(PopSciWordFlagdfPath,stringsAsFactors=FALSE)
 
 #Scientific Life Writing Corpus
-SciLifelocation <- paste0(getwd(),"/Applications/Victorian-Scientific-Life-Writing")
-SciLifeoutputlocation <- SciLifelocation
-SciLifeWordFlagdfPath <- paste0(SciLifeoutputlocation,"/","SciLifeWordFlagdf.txt")
+SciLifeWordFlagdfPath <- paste0(dflocation,"/","SciLifeWordFlagdf.txt")
 SciLifeWordFlagdf <- read.table(SciLifeWordFlagdfPath,stringsAsFactors=FALSE)
 ```
 
@@ -194,19 +180,3 @@ p <- ggplot(tempcomp, aes(y=as.numeric(as.character(Normalized_Freq)),x = as.num
       pl
 ```
 
-We can also use the tm package and findAssocs() function to see what words were most frequently associated with play and work in the 19th century.
-```{r comparison correlation, eval=FALSE}
-  correlation <- 0.8
-
-  datacorpus <- Corpus(VectorSource(Comparisondf$KWIC), readerControl=list(reader = readPlain))
-  
-  
-  data.tdm <- TermDocumentMatrix(datacorpus,control = list(removePunctuation = TRUE, stopwords = FALSE, tolower = TRUE, stemming = FALSE, 
-                                                           removeNumbers = TRUE, bounds = list(global= c(1,Inf))))
-  
-    assocdata <- findAssocs(data.tdm, "play", correlation)
-    
-    print(paste0("The following is the highest correlations for the search term '",assocterm[i],"'."))
-    print(assocdata[[1]][1:20])
-    View(assocdata[[1]][1:20])
-```
